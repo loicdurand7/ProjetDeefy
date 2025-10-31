@@ -8,7 +8,7 @@ use iutnc\deefy\repository\DeefyRepository;
 
 class AuthnProvider
 {
-    /** Cours: signin(email, passwd) -> vérifie et met en session */
+    /** signin(email, passwd) -> vérifie et met en session */
     public static function signin(string $email, string $passwd2check): void {
         $repo = DeefyRepository::getInstance();
         $user = $repo->findUserByEmail($email);
@@ -23,7 +23,7 @@ class AuthnProvider
         return;
     }
 
-    /** Cours: register(email, pass) -> hash puis insert */
+    /** register(email, pass) -> hash puis insert */
     public static function register(string $email, string $pass): bool {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new AuthnException("error : invalid user email");
@@ -37,7 +37,7 @@ class AuthnProvider
         return true;
     }
 
-    /** Cours: getSignedInUser() -> renvoie l’utilisateur de la session */
+    /** getSignedInUser() -> renvoie l’utilisateur de la session */
     public static function getSignedInUser(): array {
         if (!isset($_SESSION['user'])) {
             throw new AuthnException("Auth error : not signed in");

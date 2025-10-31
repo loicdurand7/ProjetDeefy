@@ -9,7 +9,7 @@ class SigninAction extends Action {
     public function execute(): string {
         $html = "";
 
-        // Si méthode GET → afficher le formulaire
+        // Formulaire de connexion GET → afficher le formulaire
         if ($this->http_method === 'GET') {
             $html .= <<<HTML
             <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; height: 100vh; display: flex; justify-content: center; align-items: center;">
@@ -41,7 +41,7 @@ class SigninAction extends Action {
                 // Récupère les infos du user (stockées dans $_SESSION['user'])
                 $user = unserialize($_SESSION['user']);
 
-                // On garde aussi un accès direct à l'id pour tout le projet
+                // On garde aussi un accès direct à l'id 
                 $_SESSION['user_id'] = (int)$user['id'];  
 
                 $html .= <<<HTML
@@ -52,6 +52,7 @@ class SigninAction extends Action {
                 </div>
                 HTML;
             } catch (AuthnException $e) {
+                // Si une erreur d'authentification arrive, on renvoie le message d'erreur + un bouton pour reesayer
                 $html .= <<<HTML
                 <div style="text-align:center; font-family: Arial, sans-serif; margin-top: 100px;">
                     <h3 style="color:red;">Erreur : {$e->getMessage()}</h3>

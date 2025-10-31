@@ -22,10 +22,11 @@ class DeletePlaylistAction extends Action
         // Vérifie que la playlist appartient bien à l’utilisateur
         requirePlaylistAccess($pid);
 
+        // On recupère l'instance du repository pour effectuer la suppression 
         $repo = DeefyRepository::getInstance();
 
         try {
-            $repo->removePlaylist($pid); // ta méthode du repo
+            $repo->removePlaylist($pid);
             // Si c’était la courante, on la retire de la session
             if ((int)($_SESSION['current_playlist_id'] ?? 0) === $pid) {
                 unset($_SESSION['current_playlist_id']);

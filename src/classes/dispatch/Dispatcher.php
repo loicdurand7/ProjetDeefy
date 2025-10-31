@@ -16,6 +16,7 @@ class Dispatcher
         $this->action = ($a !== null) ? $a : '';
     }
 
+    // Fonction principale du dispatcher qui permet de lancer les différentes actions
     public function run(): void
     {
         switch ($this->action) {
@@ -76,12 +77,14 @@ class Dispatcher
         if (is_callable($act)) {
             return $act();
         }
-        // fallback 
+        // Si aucun des deux n'est dispo, message d'erreur
         return '<p>Action non exécutable</p>';
     }
 
+    // Fonction pour rendre la page HTML complète avec header, footer, menus, etc
     public function renderPage(string $html): void
     {
+        // Menu gauche si utilisateur connecté
         $leftMenu = '';
         if (isset($_SESSION['user_id'])) {
             $leftMenu = '
@@ -92,6 +95,7 @@ class Dispatcher
     ';
         }
 
+        // Menu de droite selon état de connexion 
         $rightMenu = isset($_SESSION['user_id'])
             ? '<a href="?action=logout" style="color:red;margin-left:10px;">Se déconnecter</a>'
             : '<a href="?action=signin" style="margin-left:10px;">Connexion</a>

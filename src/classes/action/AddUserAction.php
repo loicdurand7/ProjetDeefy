@@ -5,7 +5,7 @@ class AddUserAction extends Action
 {
     public function execute(): string
     {
-        // GET : formulaire d'inscription (TD12 §6)
+        // GET : formulaire d'inscription
         if ($this->http_method === 'GET') {
             return <<<HTML
             <h2>Inscription</h2>
@@ -24,7 +24,7 @@ class AddUserAction extends Action
             HTML;
         }
 
-        // POST : filtrer et afficher les valeurs (XSS)
+        // POST : filtrer et afficher les valeurs pour éviter les failles XSS
         $name  = filter_var($_POST['name']  ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
         $age   = filter_var($_POST['age']   ?? '', FILTER_VALIDATE_INT);

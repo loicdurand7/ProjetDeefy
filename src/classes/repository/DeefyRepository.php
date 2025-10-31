@@ -13,6 +13,7 @@ class DeefyRepository
     private static ?DeefyRepository $instance = null;
     private static array $config = [];
 
+    // Constructeur Singleton privé pour empêcher l'instanciation directe et configurer la connexion PDO
     private function __construct(array $conf)
     {
         $this->pdo = new PDO(
@@ -25,9 +26,9 @@ class DeefyRepository
                 PDO::ATTR_STRINGIFY_FETCHES => false,
             ]
         );
-        // charset si besoin : $this->pdo->exec("SET NAMES 'utf8mb4'");
     }
 
+    // Load la configuration depuis un fichier INI (config.ini)
     public static function setConfig(string $file): void
     {
         $conf = parse_ini_file($file);
@@ -43,6 +44,7 @@ class DeefyRepository
         ];
     }
 
+    // Pour recupérer l'instance unique du repository qui permet d'accéder aux données de la BD 
     public static function getInstance(): DeefyRepository
     {
         if (self::$instance === null) {
@@ -51,8 +53,8 @@ class DeefyRepository
         return self::$instance;
     }
 
-    /* ================== PLAYLISTS (existant) ================== */
-
+    /* PLAYLISTS */
+    // Fonction pour retrouver une playlist par son ID
     public function findPlaylistById(int $id): Playlist
     {
         $stmt = $this->pdo->prepare("SELECT id, nom FROM playlist WHERE id = :id");
@@ -64,6 +66,7 @@ class DeefyRepository
         return $pl;
     }
 
+    // Fonction qui sauvegarde une playlist vide et l'associe à l'utilisateur connecté
     public function saveEmptyPlaylist(Playlist $pl): Playlist
     {
         // Insérer la playlist
@@ -72,7 +75,7 @@ class DeefyRepository
         $stmt->execute(['nom' => $pl->nom]);
         $pl->setID((int)$this->pdo->lastInsertId());
 
-        // Associer à l'utilisateur courant
+        // Associer à l'utilisateur 
         $userId = $_SESSION['user_id'] ?? null;
         if ($userId) {
             $st2 = $this->pdo->prepare("INSERT INTO user2playlist (id_user, id_pl) VALUES (:uid, :pid)");
@@ -80,6 +83,7 @@ class DeefyRepository
         }
     }
 
+    // Fonction pour récupérer toutes les playlists (pas utile ici comme on veut gerer par user)
     public function findAllPlaylists(): array
     {
         $res = [];
@@ -92,8 +96,7 @@ class DeefyRepository
         return $res;
     }
 
-    /* ================== USERS (existant) ================== */
-
+    /* USERS */
     /** Retourne la ligne user par email ou null si inconnu */
     public function findUserByEmail(string $email): ?array
     {
@@ -110,9 +113,8 @@ class DeefyRepository
         $st->execute([$email, $hash]);
     }
 
-    /* ================== PLAYLISTS / USERS (nouveau) ================== */
-
-    /** Retourne toutes les playlists d’un utilisateur */
+    /* PLAYLISTS / USERS */
+    /** Retourne toutes les playlists d’un utilisateur spécifié */
     public function listPlaylistsByUser(int $userId): array
     {
         $sql = "SELECT p.id, p.nom 
@@ -165,8 +167,7 @@ class DeefyRepository
         return $pl ?: null;
     }
 
-    /* ================== TRACKS (nouveau) ================== */
-
+    /* TRACKS */
     /** Retourne toutes les pistes d'une playlist */
     public function listTracksOfPlaylist(int $playlistId): array
     {
@@ -178,13 +179,6 @@ class DeefyRepository
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['pid' => $playlistId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    /** Ajoute une piste existante à une playlist */
-    public function addExistingTrackToPlaylist(int $playlistId, int $trackId): void
-    {
-        // TODO: calculer le prochain numéro de piste
-        // TODO: INSERT INTO playlist2track (id_pl, id_track, no_piste_dans_liste)
     }
 
     /** Crée une nouvelle piste puis la lie à une playlist */

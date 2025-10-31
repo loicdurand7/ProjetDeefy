@@ -14,7 +14,7 @@ class AddPodcastTrackAction extends Action
     {
         requireAuth();
 
-        // On travaille toujours sur la playlist "courante"
+        // On va modifier la playlist courante (car chaque fois que l'utilisateur clique sur une playlist elle devient la courante)
         $pid = (int)($_SESSION['current_playlist_id'] ?? 0);
         if ($pid <= 0) {
             return '<p>Aucune playlist courante.</p>
@@ -22,7 +22,7 @@ class AddPodcastTrackAction extends Action
         }
         requirePlaylistAccess($pid);
 
-        // === GET : Formulaire d’ajout ===
+        // GET : Formulaire d’ajout
         if ($this->http_method === 'GET') {
             return <<<HTML
             <h2>Ajouter une piste (podcast)</h2>
@@ -37,30 +37,32 @@ class AddPodcastTrackAction extends Action
             HTML;
         }
 
-        // === POST : Traitement ===
+        // POST : Traitement
         // Récup inputs
         $title    = trim((string)($_POST['title'] ?? ''));
         $author   = trim((string)($_POST['author'] ?? ''));
         $duration = (int)($_POST['duration'] ?? 0);
 
+        // Verifications simple pour le titre et la durée
         if ($title === '' || $duration <= 0) {
             return '<p style="color:red">Titre et durée sont obligatoires.</p>'
                 . '<p><a href="?action=add-track">Réessayer</a></p>';
         }
 
-        // Upload MP3 (optionnel)
+        // Upload MP3 
         $filename = null;
         if (!empty($_FILES['userfile']) && $_FILES['userfile']['error'] === UPLOAD_ERR_OK) {
             $file = $_FILES['userfile'];
             $ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
             $type = $file['type'] ?? '';
 
+            // Vérification type et extension
             if ($ext !== 'mp3' || $type !== 'audio/mpeg') {
                 return '<p style="color:red">Seuls les fichiers MP3 (audio/mpeg) sont acceptés.</p>'
                     . '<p><a href="?action=add-track">Réessayer</a></p>';
             }
 
-            // Dossier de destination (adapter si besoin)
+            // Dossier de destination (ici audio)
             $targetDir = dirname(__DIR__, 3) . '/audio';
             if (!is_dir($targetDir)) {
                 @mkdir($targetDir, 0777, true);
@@ -69,6 +71,7 @@ class AddPodcastTrackAction extends Action
             $newName    = uniqid('track_', true) . '.mp3';
             $targetPath = $targetDir . '/' . $newName;
 
+            // Si échec
             if (!@move_uploaded_file($file['tmp_name'], $targetPath)) {
                 return '<p style="color:red">Impossible de sauvegarder le fichier.</p>'
                     . '<p><a href="?action=add-track">Réessayer</a></p>';
@@ -81,7 +84,7 @@ class AddPodcastTrackAction extends Action
         try {
             $repo = DeefyRepository::getInstance();
 
-            // Nom EXACT des colonnes du dump IUT (notamment 'date_posdcast')
+            // Nom EXACT des colonnes de la BD
             $repo->addNewTrackToPlaylist($pid, [
                 'titre'          => $title,
                 'genre'          => null,
@@ -101,7 +104,7 @@ class AddPodcastTrackAction extends Action
             exit;
 
         } catch (\Throwable $e) {
-            // pas de détails techniques à l’écran
+            // On renvoie une erreur simple, pas besoin de details à l'écran juste ce qu'il faut 
             return '<p style="color:red">Erreur lors de l’ajout de la piste.</p>'
                 . '<p><a href="?action=add-track">Réessayer</a></p>';
         }

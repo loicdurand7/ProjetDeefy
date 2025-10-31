@@ -4,7 +4,7 @@ namespace iutnc\deefy\action;
 class LogoutAction extends Action {
 
     public function execute(): string {
-        // Détruire la session et réinitialiser les variables
+        // Détruire la session et réinitialiser les variables pour la deconnexion 
         session_unset();     // supprime toutes les variables de session
         session_destroy();   // détruit complètement la session
 

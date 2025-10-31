@@ -14,7 +14,7 @@ class DisplayPlaylistAction extends Action
     {
         requireAuth();
 
-        // 1) Prendre l'id fourni sinon retomber sur la courante
+        // 1) Prendre l'id fourni sinon aller sur la courante
         $idParam = $_GET['id'] ?? ($_GET['pid'] ?? null);
         if ($idParam === null) {
             $pid = (int)($_SESSION['current_playlist_id'] ?? 0);
@@ -43,25 +43,28 @@ class DisplayPlaylistAction extends Action
         // 4) Rendu
         $html  = '<h2>Playlist : ' . e($pl['nom'] ?? '???') . '</h2>';
 
+        // Si elle est vide 
         if (empty($tracks)) {
             $html .= '<p class="muted">Aucune piste pour le moment.</p>';
         } else {
             $html .= '<ol>';
+            // Affichage des pistes de la playlist
             foreach ($tracks as $t) {
                 $titre    = e($t['titre'] ?? '[sans titre]');
                 $artiste  = e($t['artiste_album'] ?? '—');
                 $duree    = format_mmss((int)($t['duree'] ?? 0));
                 $filename = $t['filename'] ?? null;
-                $tid      = isset($t['id']) ? (int)$t['id'] : 0; // <-- id de la track (nécessaire pour supprimer)
+                $tid      = isset($t['id']) ? (int)$t['id'] : 0; 
 
                 $html .= '<li><strong>'.$titre.'</strong> — '.$artiste.' <em>('.$duree.')</em>';
 
+                // Si un fichier audio est associé
                 if (!empty($filename)) {
                     $src = 'audio/' . e($filename);
                     $html .= '<br><audio controls src="'.$src.'"></audio>';
                 }
 
-                // === Bouton supprimer la piste (POST) ===
+                // Suppression d'une piste (POST)
                 if ($tid > 0) {
                     $html .= '
                         <form method="post" action="?action=delete-track" style="display:inline;margin-left:8px;">
@@ -76,10 +79,11 @@ class DisplayPlaylistAction extends Action
             $html .= '</ol>';
         }
 
+        // Liens d'actions supplémentaires lié aux playlists
         $html .= '<p><a href="?action=add-track">Ajouter une piste</a></p>';
         $html .= '<p><a href="?action=mes-playlists">Voir mes playlists</a></p>';
 
-        // === Bouton supprimer la playlist (POST) ===
+        // Bouton supprimer la playlist (POST)
         $html .= '
             <form method="post" action="?action=delete-playlist" onsubmit="return confirm(\'Supprimer définitivement cette playlist ?\')">
               <input type="hidden" name="id" value="'.$pid.'">

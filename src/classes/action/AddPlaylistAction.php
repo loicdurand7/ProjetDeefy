@@ -51,7 +51,7 @@ HTML;
         // création playist en fonction de l'utilisateur
         $pid  = $repo->createPlaylist($nom, $uid);
 
-        // Définit la playlist courante
+        // Définit la playlist courante (une seule)
         $_SESSION['current_playlist_id'] = $pid;
         header('Location: ?action=display-playlist&id=' . $pid);
         exit;
@@ -60,6 +60,7 @@ HTML;
         $nomAff = e($nom);
         $pidAff = (int)$pid;
 
+        // Affichage HTML avec les liens utiles
         return <<<HTML
 <p>Playlist <strong>{$nomAff}</strong> créée avec succès.</p>
 <p>

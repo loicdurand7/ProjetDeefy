@@ -21,10 +21,12 @@ class MesPlaylistsAction extends Action {
         $repo = DeefyRepository::getInstance();
         $playlists = $repo->listPlaylistsByUser($uid);
 
+        // Si aucune playlist
         if (empty($playlists)) {
             return "<p>Aucune playlist trouvée. <a href='?action=add-playlist'>Créer une playlist</a></p>";
         }
 
+        // Affichage des playlists 
         $html = "<h2>Mes Playlists</h2><ul>";
         foreach ($playlists as $pl) {
             $pid = (int)$pl['id'];

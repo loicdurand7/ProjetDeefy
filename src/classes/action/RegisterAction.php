@@ -7,6 +7,7 @@ use iutnc\deefy\repository\DeefyRepository;
 
 class RegisterAction extends Action {
     public function execute(): string {
+      // Formulaire d'inscription pour se créer un compte
         if ($this->http_method === 'GET') {
             return <<<HTML
             <div style="display:flex;justify-content:center;align-items:center;height:55vh;">
@@ -26,7 +27,7 @@ class RegisterAction extends Action {
             HTML;
         }
 
-        // POST
+        // Verifications des données POST (MDP et EMAIL)
         $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
         $p1 = $_POST['passwd']  ?? '';
         $p2 = $_POST['passwd2'] ?? '';
@@ -34,13 +35,14 @@ class RegisterAction extends Action {
             return $this->msg("Les mots de passe ne correspondent pas.", false);
         }
 
-        // Vérifier doublon
+        // Vérifier doublon dans la BD pour l'email
         $repo = DeefyRepository::getInstance();
         $exists = $repo->findUserByEmail($email);
         if ($exists) {
             return $this->msg("Cet email est déjà utilisé.", false);
         }
 
+        // Essai d'inscription via le provider d'autentification
         try {
             AuthnProvider::register($email, $p1);
             return $this->msg("Compte créé. Vous pouvez vous connecter.", true);
@@ -51,6 +53,7 @@ class RegisterAction extends Action {
         }
     }
 
+    // Fonction privée pour générer un message de confirmation ou d'erreur
     private function msg(string $txt, bool $ok): string {
         $color = $ok ? '#2e7d32' : '#c62828';
         $link  = $ok ? '<a href="?action=signin">Se connecter</a>' : '<a href="?action=register">Réessayer</a>';
