@@ -1,6 +1,6 @@
 # Projet Deefy – Mini-projet PHP
 **Auteur :** Johan Schaeffer  & Loic Durand
-**Date : 31 octobre 2025  
+**Date :** 31 octobre 2025  
 **IUT Nancy-Charlemagne - BUT Informatique**
 
 ---
