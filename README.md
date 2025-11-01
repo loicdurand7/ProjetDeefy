@@ -6,7 +6,7 @@
 ---
 
 ## - Liens dépot git et webetu
-**dépot git :** 
+**dépot git :** https://github.com/loicdurand7/ProjetDeefy
 **webetu :** https://webetu.iutnc.univ-lorraine.fr/~e35679u/S3D-Durand/ProjetDeefy/Index.php
 
 ---
