@@ -5,6 +5,12 @@
 
 ---
 
+## - Liens dépot git et webetu
+**dépot git :** 
+**webetu :** https://webetu.iutnc.univ-lorraine.fr/~e35679u/S3D-Durand/ProjetDeefy/Index.php
+
+---
+
 ## - Objectif
 Application web de gestion de playlists.  
 Permet de s’inscrire, se connecter, créer et gérer ses playlists, y ajouter des pistes, etc.
