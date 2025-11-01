@@ -40,7 +40,6 @@ Permet de s’inscrire, se connecter, créer et gérer ses playlists, y ajouter 
 ---
 
 ## - Démonstration
-- URL Webetu : (à remplir) 
 - Compte de test :
   - Email : user1@mail.com
   - Mot de passe : user1
